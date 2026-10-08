@@ -1,0 +1,7 @@
+# Các nền tảng gây quỹ được hỗ trợ bởi GitHub
+# Xem tài liệu: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
+
+github: [thekingbao]                          # Tài khoản đã đăng ký GitHub Sponsors
+# patreon: nlp-labs-vietnam                   # Bỏ comment nếu có tài khoản Patreon
+# buy_me_a_coffee: nlp-labs-vietnam           # Bỏ comment nếu có tài khoản Buy Me a Coffee
+custom: ["https://nlp-labs-vietnam.com/donate"]  # Trang tài trợ / gọi vốn doanh nghiệp
