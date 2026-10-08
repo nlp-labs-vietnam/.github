@@ -152,7 +152,7 @@ Hãy sử dụng mẫu **Feature Request** khi tạo Issue. Một đề xuất t
 
 ## Liên hệ
 
-- 📧 Email: `contact@nlp-labs-vietnam.com`
+- 📧 Email: `contact@nlpgroup.vn`
 - 💬 Discussions: [github.com/nlp-labs-vietnam/nlpgroup/discussions](https://github.com/nlp-labs-vietnam/nlpgroup/discussions)
 - 🐛 Issues: [github.com/nlp-labs-vietnam/nlpgroup/issues](https://github.com/nlp-labs-vietnam/nlpgroup/issues)
 

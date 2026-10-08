@@ -35,7 +35,7 @@ Chúng tôi luôn chào đón đóng góp từ cộng đồng! Dù bạn là k�
 Việc duy trì hạ tầng AI (GPU, vector database, API calls) đòi hỏi chi phí đáng kể. Nếu bạn thấy dự án hữu ích, hãy cân nhắc:
 
 - 💖 Nhấn nút **Sponsor** trên trang tổ chức để ủng hộ trực tiếp.
-- 🤝 Liên hệ hợp tác doanh nghiệp qua `contact@nlp-labs-vietnam.com`.
+- 🤝 Liên hệ hợp tác doanh nghiệp qua `contact@nlpgroup.vn`.
 - ⭐ Star các repository để tăng độ nhận diện của dự án.
 
 ---
