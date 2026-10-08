@@ -9,6 +9,7 @@ Chào mừng bạn đến với tổ chức mã nguồn mở **NLP Labs Vietnam*
 | Dự án | Mô tả | Công nghệ |
 |---|---|---|
 | **[nlpgroup](https://github.com/nlp-labs-vietnam/nlpgroup)** | Hệ thống tư vấn, thiết kế và tối ưu hóa hệ thống điện mặt trời thông minh bằng tiếng Việt | RAG · LLM · FastAPI |
+| **[nlp-ui-kit](https://github.com/nlp-labs-vietnam/nlp-ui-kit)** | Thư viện UI / Design System dùng chung cho toàn bộ sản phẩm AI và Năng lượng | React · Tailwind · TypeScript |
 
 ---
 
