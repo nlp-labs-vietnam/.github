@@ -1,0 +1,42 @@
+# ─── Python build artifacts ───────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+
+# ─── Virtual environments ─────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+
+# ─── Testing ─────────────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+coverage*.xml
+htmlcov/
+
+# ─── HuggingFace model weights (không commit) ────────────────────────────────
+.cache/
+outputs/
+*.bin
+*.pt
+*.pth
+*.safetensors
+
+# ─── Data (raw/processed — chỉ giữ samples) ──────────────────────────────────
+data/raw/
+data/processed/
+!data/samples/
+
+# ─── Logs & secrets ──────────────────────────────────────────────────────────
+*.log
+.env
+.env.local
+secrets/
+
+# ─── Editors ─────────────────────────────────────────────────────────────────
+.DS_Store
+.idea/
+*.swp
+.ipynb_checkpoints/

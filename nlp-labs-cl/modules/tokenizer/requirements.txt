@@ -1,0 +1,4 @@
+# modules/tokenizer — runtime dependencies
+# Backend tokenizers (tuỳ chọn — whitespace fallback không cần cài gì)
+underthesea>=6.8.4
+pyvi>=0.1.1

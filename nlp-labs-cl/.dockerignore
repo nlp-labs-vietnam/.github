@@ -1,0 +1,42 @@
+# .dockerignore — nlp-labs-cl
+# Loại trừ files không cần trong Docker build context
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+htmlcov/
+.coverage
+dist/
+build/
+
+# Dev environments
+.venv/
+venv/
+.env
+.env.local
+
+# Model weights và data lớn
+.cache/
+outputs/
+data/raw/
+data/processed/
+
+# Logs & secrets
+*.log
+secrets/
+*.pem
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# Git
+.git/
+.github/
+
+# CI artifacts
+coverage*.xml
