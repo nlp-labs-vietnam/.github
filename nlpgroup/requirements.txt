@@ -1,0 +1,21 @@
+# ─── Runtime ────────────────────────────────────────────────────────────────
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+pydantic>=2.7.0
+pydantic-settings>=2.3.0
+
+# ─── LLM Providers (cài thêm tuỳ provider dùng) ────────────────────────────
+# openai>=1.30.0
+# anthropic>=0.28.0
+
+# ─── Vector Store ────────────────────────────────────────────────────────────
+chromadb>=0.5.0
+
+# ─── NLP (từ nlp-labs-cl) ────────────────────────────────────────────────────
+# Khi chạy trong Docker, nlp-labs-cl được mount vào /workspace/nlp-labs-cl
+# và thêm vào PYTHONPATH. Requirements chính đặt ở nlp-labs-cl/requirements.txt.
+numpy>=1.26.0
+
+# ─── Utilities ───────────────────────────────────────────────────────────────
+python-dotenv>=1.0.1
+httpx>=0.27.0

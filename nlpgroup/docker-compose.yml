@@ -1,0 +1,74 @@
+version: "3.9"
+
+# ─── nlpgroup docker-compose.yml ─────────────────────────────────────────────
+# Local development stack. Chạy: docker compose up -d
+# API docs: http://localhost:8000/docs
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  # ── API Server ──────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ..
+      dockerfile: nlpgroup/Dockerfile
+    image: ghcr.io/nlp-labs-vietnam/nlpgroup:dev
+    container_name: nlpgroup-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src:ro                             # Hot reload source
+      - ../nlp-labs-cl/modules:/app/nlp-labs-cl/modules:ro
+      - hf-cache:/app/.cache/huggingface
+    environment:
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - EMBEDDING_MODEL=keepitreal/vietnamese-sbert
+      - EMBEDDING_DEVICE=cpu
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - CHROMA_COLLECTION=solar_knowledge_base
+    command: >
+      uvicorn src.main:app
+        --host 0.0.0.0
+        --port 8000
+        --reload
+        --log-level debug
+    depends_on:
+      chromadb:
+        condition: service_healthy
+    networks:
+      - nlp-net
+    restart: unless-stopped
+
+  # ── Vector Database ─────────────────────────────────────────────────────────
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: nlpgroup-chroma
+    volumes:
+      - chroma-data:/chroma/chroma
+    ports:
+      - "8001:8000"
+    environment:
+      - ANONYMIZED_TELEMETRY=False
+      - CHROMA_SERVER_AUTHN_PROVIDER=none
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - nlp-net
+
+volumes:
+  hf-cache:
+    driver: local
+  chroma-data:
+    driver: local
+
+networks:
+  nlp-net:
+    driver: bridge
