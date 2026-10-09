@@ -17,7 +17,7 @@ jobs:
     name: Kiểm tra lỗ hổng dependencies (Python)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Cài đặt môi trường NLP
         uses: ./.github/actions/setup-nlp-env
@@ -44,7 +44,7 @@ jobs:
       matrix:
         language: [python]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Khởi tạo CodeQL
         uses: github/codeql-action/init@v3
@@ -64,7 +64,7 @@ jobs:
     name: Quét secret bị lộ trong code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -80,7 +80,7 @@ jobs:
     name: Quét lỗ hổng Docker image (nếu có Dockerfile)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Kiểm tra có Dockerfile không
         id: check-dockerfile
