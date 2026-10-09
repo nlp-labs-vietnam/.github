@@ -1,0 +1,71 @@
+version: "3.9"
+
+# ─── nlp-labs-cl docker-compose.yml ─────────────────────────────────────────
+# Dùng cho phát triển local. Khởi động toàn bộ stack bằng:
+#   docker compose up -d
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  # ── Dev Environment ─────────────────────────────────────────────────────────
+  dev:
+    build:
+      context: ./docker/dev-env-base
+      dockerfile: Dockerfile
+      args:
+        PYTHON_VERSION: "3.11"
+    image: ghcr.io/nlp-labs-vietnam/nlp-labs-cl/dev-env:latest
+    container_name: nlp-labs-dev
+    volumes:
+      - .:/workspace
+      - hf-cache:/workspace/.cache/huggingface
+    ports:
+      - "8888:8888"   # JupyterLab
+      - "5678:5678"   # debugpy (VS Code remote debug)
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    stdin_open: true
+    tty: true
+    networks:
+      - nlp-net
+
+  # ── Vector Database (ChromaDB) ───────────────────────────────────────────────
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: nlp-labs-chroma
+    volumes:
+      - chroma-data:/chroma/chroma
+    ports:
+      - "8001:8000"
+    networks:
+      - nlp-net
+
+  # ── API Server (FastAPI inference) ───────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/run-env-base/Dockerfile
+    image: ghcr.io/nlp-labs-vietnam/nlp-labs-cl/run-env:latest
+    container_name: nlp-labs-api
+    volumes:
+      - ./configs:/app/configs:ro
+    ports:
+      - "8000:8000"
+    environment:
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - chromadb
+    networks:
+      - nlp-net
+
+volumes:
+  hf-cache:
+    driver: local
+  chroma-data:
+    driver: local
+
+networks:
+  nlp-net:
+    driver: bridge

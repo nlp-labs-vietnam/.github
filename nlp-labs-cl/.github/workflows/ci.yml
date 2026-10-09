@@ -1,0 +1,137 @@
+name: CI — Kiểm thử toàn bộ module NLP
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Dùng chung cache HuggingFace giữa các jobs
+  HF_HOME: /tmp/huggingface-cache
+
+jobs:
+  # ── Job 1: Lint & Format check ──────────────────────────────────────────────
+  lint:
+    name: Lint (Ruff + Black + Mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: lint-pip-${{ hashFiles('requirements*.txt', 'pyproject.toml') }}
+
+      - name: Cài đặt QA tools
+        run: pip install ruff==0.4.4 black==24.4.2 mypy==1.10.0
+
+      - name: Ruff — lint tất cả Python files
+        run: ruff check . --output-format=github
+
+      - name: Black — kiểm tra format
+        run: black --check .
+
+      - name: Mypy — type checking
+        run: mypy modules/ --ignore-missing-imports --no-error-summary
+
+  # ── Job 2: Unit tests cho từng module ───────────────────────────────────────
+  test-modules:
+    name: Test Module — ${{ matrix.module }}
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - tokenizer
+          - embedding
+          - ner
+        python-version: ["3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: test-${{ matrix.module }}-py${{ matrix.python-version }}-${{ hashFiles('requirements*.txt') }}
+          restore-keys: test-${{ matrix.module }}-py${{ matrix.python-version }}-
+
+      - name: Cache HuggingFace models
+        uses: actions/cache@v4
+        with:
+          path: /tmp/huggingface-cache
+          key: hf-models-${{ matrix.module }}-${{ hashFiles(format('modules/{0}/requirements.txt', matrix.module)) }}
+          restore-keys: hf-models-${{ matrix.module }}-
+
+      - name: Cài đặt dependencies của module
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          if [ -f "modules/${{ matrix.module }}/requirements.txt" ]; then
+            pip install -r "modules/${{ matrix.module }}/requirements.txt"
+          fi
+          pip install pytest pytest-cov pytest-asyncio
+
+      - name: Chạy tests cho module ${{ matrix.module }}
+        run: |
+          pytest modules/${{ matrix.module }}/tests/ \
+            --cov=modules/${{ matrix.module }} \
+            --cov-report=xml:coverage-${{ matrix.module }}.xml \
+            --cov-report=term-missing \
+            -v
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage-${{ matrix.module }}.xml
+          flags: ${{ matrix.module }}
+          fail_ci_if_error: false
+
+  # ── Job 3: Integration test (toàn bộ pipeline) ──────────────────────────────
+  integration-test:
+    name: Integration Test — Full NLP Pipeline
+    runs-on: ubuntu-latest
+    needs: test-modules
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: integration-pip-${{ hashFiles('requirements*.txt') }}
+
+      - name: Cài đặt toàn bộ dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Chạy integration tests
+        run: |
+          pytest tests/integration/ \
+            -v \
+            --tb=short \
+            -m "not slow"
+        env:
+          INTEGRATION_TEST: "true"

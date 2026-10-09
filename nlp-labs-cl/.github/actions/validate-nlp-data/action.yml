@@ -1,0 +1,87 @@
+name: Validate NLP Data
+description: >
+  Kiểm tra tính hợp lệ của file dữ liệu đầu vào (JSONL, CSV, YAML configs)
+  trước khi chạy training hoặc inference pipeline.
+
+author: "NLP Labs Vietnam <331778083+thekingbao@users.noreply.github.com>"
+
+inputs:
+  data-path:
+    description: "Đường dẫn đến thư mục hoặc file dữ liệu cần validate"
+    required: true
+  schema-path:
+    description: "Đường dẫn đến JSON schema file dùng để validate"
+    required: false
+    default: ""
+  format:
+    description: "Định dạng file: jsonl | csv | yaml | auto"
+    required: false
+    default: "auto"
+  max-samples:
+    description: "Số mẫu tối đa kiểm tra (0 = kiểm tra tất cả)"
+    required: false
+    default: "1000"
+  fail-on-warning:
+    description: "Dừng pipeline nếu có cảnh báo chất lượng dữ liệu"
+    required: false
+    default: "false"
+
+outputs:
+  total-samples:
+    description: "Tổng số mẫu đã kiểm tra"
+    value: ${{ steps.validate.outputs.total-samples }}
+  invalid-samples:
+    description: "Số mẫu không hợp lệ"
+    value: ${{ steps.validate.outputs.invalid-samples }}
+  report-path:
+    description: "Đường dẫn đến báo cáo validation chi tiết"
+    value: ${{ steps.validate.outputs.report-path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Cài đặt validation dependencies
+      shell: bash
+      run: pip install pyyaml jsonschema pandas tqdm --quiet
+
+    - name: Chạy data validation
+      id: validate
+      shell: bash
+      run: |
+        python ${{ github.action_path }}/validate_data.py \
+          --data-path "${{ inputs.data-path }}" \
+          --schema-path "${{ inputs.schema-path }}" \
+          --format "${{ inputs.format }}" \
+          --max-samples "${{ inputs.max-samples }}" \
+          --fail-on-warning "${{ inputs.fail-on-warning }}" \
+          --output-file /tmp/validation-report.json
+
+        # Đọc kết quả và set outputs
+        TOTAL=$(python -c "import json; d=json.load(open('/tmp/validation-report.json')); print(d.get('total_samples', 0))")
+        INVALID=$(python -c "import json; d=json.load(open('/tmp/validation-report.json')); print(d.get('invalid_samples', 0))")
+        echo "total-samples=${TOTAL}" >> $GITHUB_OUTPUT
+        echo "invalid-samples=${INVALID}" >> $GITHUB_OUTPUT
+        echo "report-path=/tmp/validation-report.json" >> $GITHUB_OUTPUT
+
+    - name: Upload validation report
+      uses: actions/upload-artifact@v4
+      with:
+        name: data-validation-report
+        path: /tmp/validation-report.json
+        retention-days: 7
+
+    - name: In tóm tắt validation
+      shell: bash
+      run: |
+        echo "## 📊 Data Validation Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        python -c "
+        import json
+        d = json.load(open('/tmp/validation-report.json'))
+        print(f'| Chỉ số | Giá trị |')
+        print(f'|---|---|')
+        print(f'| Tổng mẫu | {d.get(\"total_samples\", 0):,} |')
+        print(f'| Mẫu hợp lệ | {d.get(\"valid_samples\", 0):,} |')
+        print(f'| Mẫu không hợp lệ | {d.get(\"invalid_samples\", 0):,} |')
+        print(f'| Tỷ lệ hợp lệ | {d.get(\"validity_rate\", 0):.1%} |')
+        " >> $GITHUB_STEP_SUMMARY

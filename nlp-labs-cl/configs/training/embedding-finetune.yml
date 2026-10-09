@@ -1,0 +1,44 @@
+# type: training
+# ─────────────────────────────────────────────────────────────────────────────
+# configs/training/embedding-finetune.yml
+# Fine-tuning SentenceTransformer cho domain Năng lượng Mặt trời Việt Nam
+# Chạy: python scripts/run_pipeline.py --config configs/training/embedding-finetune.yml
+# ─────────────────────────────────────────────────────────────────────────────
+
+model:
+  base_model: "keepitreal/vietnamese-sbert"
+  output_dir: "outputs/embedding-solar-v1"
+  # Lưu checkpoint sau mỗi N steps
+  save_steps: 500
+  save_total_limit: 3
+
+data:
+  train_path: "data/processed/solar_pairs_train.jsonl"
+  eval_path: "data/processed/solar_pairs_eval.jsonl"
+  # Định dạng: {"query": "...", "positive": "...", "negative": "..."} (triplet)
+  # hoặc: {"sentence1": "...", "sentence2": "...", "score": 0.85} (pair)
+  format: "triplet"
+  max_seq_length: 256
+
+training:
+  num_epochs: 3
+  batch_size: 32
+  learning_rate: 2.0e-5
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  # Hàm loss phù hợp cho retrieval
+  loss_function: "MultipleNegativesRankingLoss"
+  evaluation_strategy: "epoch"
+  metric_for_best_model: "cosine_accuracy"
+  fp16: false   # Đặt true khi có GPU hỗ trợ
+
+augmentation:
+  # Augment tiếng Việt bằng cách hoán đổi synonym domain
+  enabled: true
+  synonym_dict: "data/dicts/solar_synonyms.json"
+  aug_probability: 0.15
+
+logging:
+  report_to: "tensorboard"
+  logging_dir: "outputs/embedding-solar-v1/logs"
+  logging_steps: 50

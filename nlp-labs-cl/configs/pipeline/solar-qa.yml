@@ -1,0 +1,25 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# configs/pipeline/solar-qa.yml
+# Cấu hình cho toàn bộ pipeline tích hợp:
+#   tokenizer → embedding → ner
+# Chạy: python scripts/run_pipeline.py --config configs/pipeline/solar-qa.yml
+# ─────────────────────────────────────────────────────────────────────────────
+
+data:
+  input_path: "data/raw/solar_queries.txt"
+  output_path: "outputs/pipeline/solar-qa-processed"
+
+tokenizer:
+  backend: "underthesea"
+  keep_punctuation: true
+  lowercase: false
+
+embedding:
+  model_name: "keepitreal/vietnamese-sbert"
+  device: "cpu"
+  batch_size: 32
+  normalize: true
+
+ner:
+  mode: "rule_based"
+  extract_from_query: true

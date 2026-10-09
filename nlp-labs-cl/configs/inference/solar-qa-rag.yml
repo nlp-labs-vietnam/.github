@@ -1,0 +1,57 @@
+# type: inference
+# ─────────────────────────────────────────────────────────────────────────────
+# configs/inference/solar-qa-rag.yml
+# Cấu hình RAG pipeline tư vấn điện mặt trời
+# Được dùng bởi: nlpgroup (API server)
+# ─────────────────────────────────────────────────────────────────────────────
+
+model:
+  model_path: "outputs/embedding-solar-v1"
+  # Fallback về base model nếu fine-tuned chưa có
+  fallback_model: "keepitreal/vietnamese-sbert"
+
+inference:
+  max_length: 512
+  device: "cpu"           # "cuda:0" khi deploy trên GPU server
+  batch_size: 16
+  normalize_embeddings: true
+
+retrieval:
+  vector_store: "chromadb"
+  collection_name: "solar_knowledge_base"
+  top_k: 5
+  # Ngưỡng similarity tối thiểu — bỏ qua kết quả không liên quan
+  similarity_threshold: 0.65
+  # Kết hợp với BM25 để hybrid search
+  hybrid_search: true
+  bm25_weight: 0.3
+  dense_weight: 0.7
+
+generation:
+  provider: "openai"           # "openai" | "anthropic" | "local"
+  model_name: "gpt-4o-mini"
+  temperature: 0.1             # Thấp để đảm bảo tính nhất quán số liệu
+  max_tokens: 1024
+  system_prompt: |
+    Bạn là chuyên gia tư vấn hệ thống điện mặt trời tại Việt Nam.
+    Chỉ trả lời dựa trên tài liệu được cung cấp. Nếu không có thông tin,
+    hãy thông báo rõ ràng thay vì bịa đặt số liệu.
+    Trích dẫn nguồn tài liệu khi đưa ra số liệu kỹ thuật.
+
+ner:
+  enabled: true
+  mode: "rule_based"           # Dùng rule-based để tốc độ cao hơn trong inference
+  extract_from_query: true     # Trích xuất entities từ câu hỏi để cải thiện retrieval
+
+postprocessing:
+  # Thêm citation số vào cuối mỗi câu có số liệu kỹ thuật
+  add_citations: true
+  citation_format: "[{index}]"
+  # Giới hạn độ dài phản hồi
+  max_response_length: 800
+
+cache:
+  # Cache kết quả embedding của query thường gặp
+  query_cache_enabled: true
+  cache_ttl_seconds: 3600
+  max_cache_size: 10000

@@ -1,0 +1,74 @@
+name: Lint — Kiểm tra chất lượng mã nguồn
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "modules/**/*.py"
+      - "scripts/**/*.py"
+      - "configs/**/*.py"
+      - "*.py"
+      - "pyproject.toml"
+      - ".ruff.toml"
+
+permissions:
+  contents: read
+  pull-requests: write   # Để post inline review comments
+
+jobs:
+  ruff:
+    name: Ruff Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install ruff==0.4.4
+      - name: Chạy Ruff và xuất annotations
+        run: ruff check . --output-format=github
+      - name: Ruff format check
+        run: ruff format --check .
+
+  black:
+    name: Black Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install black==24.4.2
+      - run: black --check --diff .
+
+  mypy:
+    name: Mypy Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: mypy-${{ hashFiles('requirements*.txt') }}
+      - name: Cài đặt dependencies + stubs
+        run: |
+          pip install -r requirements.txt
+          pip install mypy==1.10.0 types-requests types-PyYAML
+      - name: Chạy Mypy
+        run: mypy modules/ --ignore-missing-imports --pretty
+
+  data-quality:
+    name: Kiểm tra chất lượng dữ liệu configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pyyaml jsonschema
+      - name: Validate YAML configs
+        run: python scripts/validate_configs.py --dir configs/

@@ -1,0 +1,131 @@
+name: Setup NLP Python Environment
+description: >
+  Action dùng chung cho toàn bộ workflow trong nlp-labs-cl.
+  Cài đặt Python, cache pip/HuggingFace, và cài dependencies theo module.
+
+author: "NLP Labs Vietnam <331778083+thekingbao@users.noreply.github.com>"
+
+inputs:
+  python-version:
+    description: "Phiên bản Python"
+    required: false
+    default: "3.11"
+  module:
+    description: "Tên module cần cài dependencies riêng (tokenizer/embedding/ner/all)"
+    required: false
+    default: "all"
+  install-dev:
+    description: "Cài thêm dev/test tools (ruff, black, pytest, ...)"
+    required: false
+    default: "true"
+  cache-hf-models:
+    description: "Cache HuggingFace model files"
+    required: false
+    default: "true"
+
+outputs:
+  python-path:
+    description: "Đường dẫn Python executable"
+    value: ${{ steps.setup.outputs.python-path }}
+  hf-cache-hit:
+    description: "true nếu HF model cache được tái sử dụng"
+    value: ${{ steps.hf-cache.outputs.cache-hit }}
+
+runs:
+  using: composite
+  steps:
+    - name: Cài đặt Python ${{ inputs.python-version }}
+      id: setup
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Tạo cache key từ requirements files
+      id: keys
+      shell: bash
+      run: |
+        REQS=$(find . -maxdepth 3 -name "requirements*.txt" | sort | xargs cat 2>/dev/null | sha256sum | cut -d' ' -f1)
+        echo "pip-key=nlp-pip-${{ inputs.python-version }}-${{ inputs.module }}-${REQS}" >> $GITHUB_OUTPUT
+        if [ -f "modules/${{ inputs.module }}/requirements.txt" ]; then
+          MODULE_HASH=$(sha256sum "modules/${{ inputs.module }}/requirements.txt" | cut -d' ' -f1)
+        else
+          MODULE_HASH="no-module-req"
+        fi
+        echo "hf-key=hf-models-${{ inputs.module }}-${MODULE_HASH}" >> $GITHUB_OUTPUT
+
+    - name: Cache pip packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ steps.keys.outputs.pip-key }}
+        restore-keys: |
+          nlp-pip-${{ inputs.python-version }}-${{ inputs.module }}-
+          nlp-pip-${{ inputs.python-version }}-
+
+    - name: Cache HuggingFace model files
+      id: hf-cache
+      if: inputs.cache-hf-models == 'true'
+      uses: actions/cache@v4
+      with:
+        path: /tmp/huggingface-cache
+        key: ${{ steps.keys.outputs.hf-key }}
+        restore-keys: hf-models-${{ inputs.module }}-
+
+    - name: Đặt HF_HOME env
+      if: inputs.cache-hf-models == 'true'
+      shell: bash
+      run: |
+        echo "HF_HOME=/tmp/huggingface-cache" >> $GITHUB_ENV
+        echo "TRANSFORMERS_CACHE=/tmp/huggingface-cache/transformers" >> $GITHUB_ENV
+        mkdir -p /tmp/huggingface-cache
+
+    - name: Nâng cấp pip
+      shell: bash
+      run: python -m pip install --upgrade pip setuptools wheel
+
+    - name: Cài đặt root requirements
+      shell: bash
+      run: |
+        if [ -f "requirements.txt" ]; then
+          pip install -r requirements.txt
+        fi
+
+    - name: Cài đặt module-specific requirements
+      if: inputs.module != 'all'
+      shell: bash
+      run: |
+        MODULE_REQ="modules/${{ inputs.module }}/requirements.txt"
+        if [ -f "$MODULE_REQ" ]; then
+          pip install -r "$MODULE_REQ"
+        fi
+
+    - name: Cài đặt tất cả module requirements (mode=all)
+      if: inputs.module == 'all'
+      shell: bash
+      run: |
+        find modules/ -name "requirements.txt" | while read f; do
+          echo "→ Cài đặt $f"
+          pip install -r "$f"
+        done
+
+    - name: Cài đặt dev/test tools
+      if: inputs.install-dev == 'true'
+      shell: bash
+      run: |
+        pip install \
+          ruff==0.4.4 \
+          black==24.4.2 \
+          mypy==1.10.0 \
+          pytest==8.2.0 \
+          pytest-cov==5.0.0 \
+          pytest-asyncio==0.23.7
+
+    - name: In tóm tắt môi trường
+      shell: bash
+      run: |
+        echo "─────────────────────────────────────────────"
+        echo "✅  Python:  $(python --version)"
+        echo "✅  pip:     $(pip --version | cut -d' ' -f1-2)"
+        echo "✅  Module:  ${{ inputs.module }}"
+        echo "✅  HF Home: ${HF_HOME:-not set}"
+        echo "─────────────────────────────────────────────"
