@@ -1,0 +1,95 @@
+name: Setup NLP Environment
+description: >
+  Cài đặt Python, cache pip, và cài đặt toàn bộ NLP/AI dependencies dùng chung
+  cho tất cả workflow trong tổ chức nlp-labs-vietnam.
+
+author: "NLP Labs Vietnam <331778083+thekingbao@users.noreply.github.com>"
+
+inputs:
+  python-version:
+    description: "Phiên bản Python cần cài đặt (VD: 3.11)"
+    required: false
+    default: "3.11"
+  install-extras:
+    description: "Các extras pip cần cài thêm, dạng chuỗi phân cách bởi dấu phẩy (VD: dev,docs)"
+    required: false
+    default: ""
+  cache-suffix:
+    description: "Hậu tố tuỳ chọn để phân biệt cache key giữa các job"
+    required: false
+    default: ""
+
+outputs:
+  python-path:
+    description: "Đường dẫn đến Python executable đã cài"
+    value: ${{ steps.setup-python.outputs.python-path }}
+  cache-hit:
+    description: "true nếu pip cache được tái sử dụng"
+    value: ${{ steps.pip-cache.outputs.cache-hit }}
+
+runs:
+  using: composite
+  steps:
+    - name: Cài đặt Python ${{ inputs.python-version }}
+      id: setup-python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Tính cache key từ requirements files
+      id: cache-key
+      shell: bash
+      run: |
+        # Hash tất cả requirements*.txt và pyproject.toml nếu có
+        FILES=$(find . -maxdepth 2 \( -name "requirements*.txt" -o -name "pyproject.toml" \) | sort | tr '\n' ':')
+        HASH=$(echo "$FILES" | xargs cat 2>/dev/null | sha256sum | cut -d' ' -f1)
+        echo "key=nlp-pip-${{ inputs.python-version }}-${{ inputs.cache-suffix }}-${HASH}" >> $GITHUB_OUTPUT
+
+    - name: Cache pip packages
+      id: pip-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ steps.cache-key.outputs.key }}
+        restore-keys: |
+          nlp-pip-${{ inputs.python-version }}-${{ inputs.cache-suffix }}-
+          nlp-pip-${{ inputs.python-version }}-
+
+    - name: Nâng cấp pip, setuptools, wheel
+      shell: bash
+      run: python -m pip install --upgrade pip setuptools wheel
+
+    - name: Cài đặt dependencies từ requirements.txt
+      shell: bash
+      run: |
+        if [ -f "requirements.txt" ]; then
+          pip install -r requirements.txt
+        elif [ -f "pyproject.toml" ]; then
+          pip install -e ".[${EXTRAS}]"
+        else
+          echo "⚠️  Không tìm thấy requirements.txt hoặc pyproject.toml — bỏ qua bước cài đặt."
+        fi
+      env:
+        EXTRAS: ${{ inputs.install-extras }}
+
+    - name: Cài đặt dev dependencies (lint, test)
+      shell: bash
+      run: |
+        pip install \
+          ruff \
+          black \
+          mypy \
+          pytest \
+          pytest-cov \
+          pytest-asyncio
+
+    - name: Xác nhận môi trường đã cài
+      shell: bash
+      run: |
+        echo "─────────────────────────────────────────"
+        echo "✅  Python: $(python --version)"
+        echo "✅  pip:    $(pip --version)"
+        echo "✅  Ruff:   $(ruff --version)"
+        echo "✅  Black:  $(black --version | head -1)"
+        echo "✅  Pytest: $(pytest --version)"
+        echo "─────────────────────────────────────────"

@@ -1,0 +1,96 @@
+# labeler.yml — Tự động gắn nhãn PR theo đường dẫn file thay đổi
+# Sử dụng bởi: actions/labeler@v5
+# Tài liệu: https://github.com/actions/labeler
+
+# ── CI/CD & DevOps ────────────────────────────────────────────────────────────
+ci/cd:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/workflows/**"
+          - ".github/actions/**"
+          - ".github/dependabot.yml"
+          - "Dockerfile"
+          - "docker-compose*.yml"
+          - ".dockerignore"
+
+# ── Tooling & Build ───────────────────────────────────────────────────────────
+tooling:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/actions/**"
+          - "scripts/**"
+          - "Makefile"
+          - "pyproject.toml"
+          - "setup.cfg"
+          - "setup.py"
+          - "*.config.js"
+          - "*.config.ts"
+          - "tsconfig*.json"
+          - "vite.config.*"
+          - "tailwind.config.*"
+          - "postcss.config.*"
+
+# ── Tài liệu ─────────────────────────────────────────────────────────────────
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.md"
+          - "**/*.rst"
+          - "docs/**"
+          - ".github/ISSUE_TEMPLATE/**"
+          - ".github/PULL_REQUEST_TEMPLATE.md"
+          - ".github/SUPPORT.md"
+          - ".github/CODE_OF_CONDUCT.md"
+          - ".github/CONTRIBUTING.md"
+
+# ── AI / NLP ─────────────────────────────────────────────────────────────────
+ai:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/**/rag/**"
+          - "src/**/llm/**"
+          - "src/**/embeddings/**"
+          - "src/**/retrieval/**"
+          - "nlp-ui-kit/src/ai-chat/**"
+
+# ── Solar / Energy ────────────────────────────────────────────────────────────
+solar:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/**/solar/**"
+          - "src/**/energy/**"
+          - "src/**/inverter/**"
+          - "nlp-ui-kit/src/charts/**"
+
+# ── Design System & Frontend ──────────────────────────────────────────────────
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "nlp-ui-kit/**"
+
+# ── Design Tokens ─────────────────────────────────────────────────────────────
+design-tokens:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "nlp-ui-kit/tokens/**"
+
+# ── Tests ─────────────────────────────────────────────────────────────────────
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "tests/**"
+          - "**/*_test.py"
+          - "**/*.test.ts"
+          - "**/*.test.tsx"
+          - "**/*.spec.ts"
+          - "**/*.spec.tsx"
+
+# ── Dependencies ──────────────────────────────────────────────────────────────
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "requirements*.txt"
+          - "pyproject.toml"
+          - "package.json"
+          - "package-lock.json"
+          - "yarn.lock"

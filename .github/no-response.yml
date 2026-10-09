@@ -1,0 +1,39 @@
+# no-response.yml — Tự động đóng issue không có phản hồi sau 14 ngày
+# Sử dụng bởi: actions/stale@v9
+# Cần thêm workflow để kích hoạt — xem .github/workflows/stale.yml
+
+daysUntilStale: 14
+daysUntilClose: 3
+staleLabel: "no-response"
+
+exemptLabels:
+  - "pinned"
+  - "security"
+  - "in-progress"
+  - "blocked"
+
+onlyLabels:
+  - "needs-more-info"
+  - "waiting-for-reporter"
+
+markComment: |
+  Xin chào! 👋
+
+  Issue này đã được đánh dấu là **cần thêm thông tin** nhưng chưa nhận được phản hồi trong **14 ngày**.
+
+  Để giữ danh sách Issues gọn gàng và tập trung, issue sẽ tự động được **đóng sau 3 ngày nữa** nếu không có hoạt động mới.
+
+  Nếu vấn đề của bạn vẫn còn tồn tại:
+  - Vui lòng cung cấp thêm thông tin theo yêu cầu ở trên.
+  - Hoặc mở một issue mới với đầy đủ thông tin hơn.
+
+  Cảm ơn bạn đã đóng góp cho **NLP Labs Vietnam**! 🇻🇳
+
+closeComment: |
+  Issue này đã được **đóng tự động** do không có phản hồi trong 17 ngày (14 ngày chờ + 3 ngày gia hạn).
+
+  Nếu bạn vẫn gặp vấn đề này, vui lòng:
+  1. Mở issue mới với đầy đủ thông tin theo mẫu.
+  2. Hoặc tham gia thảo luận tại [GitHub Discussions](https://github.com/nlp-labs-vietnam/nlpgroup/discussions).
+
+  Trân trọng — Đội ngũ **NLP Labs Vietnam** 🌱

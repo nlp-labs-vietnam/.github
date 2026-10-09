@@ -1,0 +1,127 @@
+name-template: "v$RESOLVED_VERSION 🚀"
+tag-template: "v$RESOLVED_VERSION"
+tag-prefix: "v"
+
+# ─── Quy tắc phân loại nhãn PR → nhóm changelog ─────────────────────────────
+categories:
+  - title: "🚀 Tính năng mới"
+    labels:
+      - "feat"
+      - "feature"
+      - "enhancement"
+
+  - title: "🐛 Sửa lỗi"
+    labels:
+      - "fix"
+      - "bugfix"
+      - "bug"
+
+  - title: "🤖 AI / NLP"
+    labels:
+      - "ai"
+      - "nlp"
+      - "rag"
+      - "llm"
+
+  - title: "☀️ Năng lượng mặt trời"
+    labels:
+      - "solar"
+      - "energy"
+      - "inverter"
+
+  - title: "⚡ Hiệu năng"
+    labels:
+      - "performance"
+      - "perf"
+      - "optimization"
+
+  - title: "♻️ Refactor & Cải tiến mã nguồn"
+    labels:
+      - "refactor"
+      - "cleanup"
+      - "tech-debt"
+
+  - title: "🛡️ Bảo mật"
+    labels:
+      - "security"
+      - "vulnerability"
+
+  - title: "📖 Tài liệu"
+    labels:
+      - "documentation"
+      - "docs"
+
+  - title: "🔧 CI/CD & Tooling"
+    labels:
+      - "ci/cd"
+      - "tooling"
+      - "devops"
+      - "github-actions"
+
+  - title: "📦 Dependencies"
+    labels:
+      - "dependencies"
+      - "deps"
+
+  - title: "🌐 Khác"
+    labels:
+      - "*"   # Nhãn không khớp bất kỳ nhóm nào sẽ vào đây
+
+# ─── Quy tắc tự động tăng version theo loại thay đổi ────────────────────────
+version-resolver:
+  major:
+    labels:
+      - "breaking-change"
+      - "major"
+  minor:
+    labels:
+      - "feat"
+      - "feature"
+      - "enhancement"
+      - "ai"
+      - "solar"
+  patch:
+    labels:
+      - "fix"
+      - "bug"
+      - "bugfix"
+      - "security"
+      - "performance"
+      - "docs"
+      - "documentation"
+      - "dependencies"
+  default: patch
+
+# ─── Loại trừ những PR không cần xuất hiện trong changelog ──────────────────
+exclude-labels:
+  - "skip-changelog"
+  - "wip"
+
+# ─── Template nội dung Release Notes ─────────────────────────────────────────
+template: |
+  ## 🇻🇳 NLP Labs Vietnam — Bản phát hành $RESOLVED_VERSION
+
+  > Phát hành bởi: $AUTHOR · Ngày: $DATE
+
+  $CHANGES
+
+  ---
+
+  **Số liệu phiên bản này:**
+  - 🔀 $NUMBER_OF_PULL_REQUESTS Pull Request được merge
+  - 👥 $NUMBER_OF_CONTRIBUTORS contributor tham gia
+
+  **Cài đặt / Nâng cấp:**
+  ```bash
+  pip install nlp-labs==$RESOLVED_VERSION
+  # hoặc
+  pip install --upgrade nlp-labs
+  ```
+
+  **Xem toàn bộ thay đổi:** [$PREVIOUS_TAG → $RESOLVED_VERSION]($COMPARE_URL)
+
+change-template: "- $TITLE (#$NUMBER) — @$AUTHOR"
+change-title-escapes: '\<*_&'
+
+no-changes-template: |
+  Phiên bản bảo trì — không có thay đổi đáng kể với người dùng cuối.

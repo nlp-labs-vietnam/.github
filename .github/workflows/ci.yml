@@ -1,0 +1,65 @@
+name: CI — Kiểm thử tự động
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    name: Lint & Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Cài đặt môi trường NLP
+        uses: ./.github/actions/setup-nlp-env
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Lint với Ruff
+        run: ruff check . --output-format=github
+
+      - name: Kiểm tra format với Black
+        run: black --check .
+
+      - name: Kiểm tra types với Mypy
+        run: mypy src/ --ignore-missing-imports
+
+      - name: Chạy unit tests với Pytest
+        run: |
+          pytest tests/ \
+            --cov=src \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            -v
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage.xml
+          fail_ci_if_error: false
+
+  build-check:
+    name: Build check
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cài đặt môi trường NLP
+        uses: ./.github/actions/setup-nlp-env
+        with:
+          python-version: "3.11"
+      - name: Kiểm tra build package
+        run: python -m build --sdist --wheel --outdir dist/

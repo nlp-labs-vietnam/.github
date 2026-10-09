@@ -1,0 +1,60 @@
+name: Release — Tạo bản phát hành tự động
+
+on:
+  push:
+    tags:
+      - "v*.*.*"   # Kích hoạt khi tag có dạng v1.0.0, v2.3.1, v0.1.0-beta.1, ...
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source (full history để generate changelog)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cài đặt môi trường NLP
+        uses: ./.github/actions/setup-nlp-env
+        with:
+          python-version: "3.11"
+
+      - name: Chạy toàn bộ test suite trước khi release
+        run: pytest tests/ -v --tb=short
+
+      - name: Build distribution packages
+        run: python -m build --sdist --wheel --outdir dist/
+
+      - name: Trích xuất release notes từ CHANGELOG
+        id: extract-notes
+        uses: release-drafter/release-drafter@v6
+        with:
+          config-name: release-drafter.yml
+          publish: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tạo GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Release ${{ github.ref_name }}"
+          body: ${{ steps.extract-notes.outputs.body }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: dist/*
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish lên PyPI (chỉ khi không phải pre-release)
+        if: "!contains(github.ref_name, '-')"
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true

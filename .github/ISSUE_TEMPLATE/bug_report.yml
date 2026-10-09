@@ -1,0 +1,130 @@
+name: Báo cáo lỗi (Bug Report)
+description: Tạo báo cáo để giúp chúng tôi tái hiện và sửa lỗi nhanh nhất có thể
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+assignees:
+  - thekingbao
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐛 Báo cáo lỗi — NLP Labs Vietnam
+        Cảm ơn bạn đã dành thời gian báo cáo! Vui lòng điền đầy đủ thông tin bên dưới để đội ngũ có thể xử lý nhanh nhất.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Mô tả lỗi
+      description: Mô tả rõ ràng và súc tích về lỗi bạn gặp phải.
+      placeholder: "Ví dụ: Khi hỏi về sản lượng điện tỉnh Đắk Lắk, AI trả về số liệu của Khánh Hòa."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Các bước tái hiện
+      description: Liệt kê từng bước để tái hiện lỗi.
+      placeholder: |
+        1. Mở giao diện chat tại https://...
+        2. Nhập câu hỏi: "Tính sản lượng điện cho 5 kWp tại Đắk Lắk"
+        3. Nhấn Enter và chờ phản hồi
+        4. Kết quả hiển thị sai tỉnh
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Kết quả mong đợi
+      description: AI hoặc hệ thống cần làm gì?
+      placeholder: "AI cần trả về số liệu bức xạ mặt trời của Đắk Lắk (~4.9 kWh/m²/ngày)."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Kết quả thực tế
+      description: Hệ thống thực sự trả về / làm gì?
+      placeholder: "AI trả về số liệu của Khánh Hòa (~5.2 kWh/m²/ngày)."
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Ảnh chụp màn hình / Video
+      description: Kéo thả ảnh hoặc video vào đây (nếu có).
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Mức độ nghiêm trọng
+      description: Lỗi này ảnh hưởng đến công việc của bạn như thế nào?
+      options:
+        - "Thấp — Bất tiện nhỏ, vẫn dùng được"
+        - "Trung bình — Ảnh hưởng một số tính năng"
+        - "Cao — Chặn luồng công việc quan trọng"
+        - "Nghiêm trọng — Ứng dụng bị crash / mất dữ liệu"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Hệ điều hành
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS 14 (Sonoma)
+        - macOS 13 (Ventura)
+        - Ubuntu 22.04
+        - Ubuntu 20.04
+        - Khác (ghi rõ bên dưới)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Trình duyệt (nếu là lỗi giao diện)
+      options:
+        - Chrome (mới nhất)
+        - Firefox (mới nhất)
+        - Edge (mới nhất)
+        - Safari
+        - Không liên quan (lỗi backend/API)
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Phiên bản ứng dụng
+      placeholder: "v1.2.0 hoặc commit hash: abc1234"
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log lỗi (nếu có)
+      description: Dán log từ console, terminal, hoặc file log.
+      render: shell
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Kiểm tra trước khi gửi
+      options:
+        - label: Tôi đã tìm kiếm Issues hiện có và chưa tìm thấy báo cáo trùng lặp.
+          required: true
+        - label: Tôi đã đọc tài liệu và README trước khi báo cáo.
+          required: true
+        - label: Tôi có thể tái hiện lỗi này một cách nhất quán.
+          required: false

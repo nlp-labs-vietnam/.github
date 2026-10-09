@@ -1,0 +1,99 @@
+name: Đề xuất tính năng (Feature Request)
+description: Đề xuất một ý tưởng hoặc cải tiến cho dự án
+title: "[FEATURE] "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 💡 Đề xuất tính năng — NLP Labs Vietnam
+        Một đề xuất tốt cần mô tả rõ **vấn đề** (không chỉ giải pháp) để đội ngũ đánh giá mức độ ưu tiên chính xác.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Vấn đề cần giải quyết
+      description: Tính năng này giúp giải quyết bất tiện nào cho người dùng?
+      placeholder: |
+        Ví dụ: Hiện tại người dùng không thể so sánh chi phí lắp đặt của 2 thương hiệu Inverter
+        trong cùng một câu hỏi. Họ phải hỏi riêng lẻ 2 lần và tự tổng hợp — rất mất thời gian.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Giải pháp mong muốn
+      description: Bạn muốn tính năng hoạt động như thế nào? Càng cụ thể càng tốt.
+      placeholder: |
+        Ví dụ: AI có thể nhận câu hỏi dạng "So sánh Growatt và SMA cho hệ thống 10 kWp tại Hà Nội"
+        và trả về bảng so sánh gồm: giá, hiệu suất, bảo hành, thời gian hoàn vốn.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Giải pháp thay thế đang dùng
+      description: Bạn đang xử lý vấn đề này theo cách thủ công nào? Tại sao chưa đủ tốt?
+      placeholder: "Tôi đang hỏi 2 câu riêng biệt rồi tự so sánh trong đầu — dễ sai và mất thời gian."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Loại tính năng
+      description: Tính năng này thuộc nhóm nào?
+      options:
+        - "AI / NLP — Cải thiện chất lượng phản hồi của mô hình"
+        - "RAG — Cải thiện truy xuất tài liệu / nguồn tham khảo"
+        - "Giao diện (UI/UX) — Cải thiện trải nghiệm người dùng"
+        - "Năng lượng mặt trời — Tính năng đặc thù cho domain Solar"
+        - "Hiệu năng — Tốc độ, caching, tối ưu hóa"
+        - "Tích hợp — Kết nối với hệ thống bên ngoài (API, IoT...)"
+        - "Khác"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Mức độ quan trọng với bạn
+      options:
+        - "Thấp — Tiện có, không có cũng được"
+        - "Trung bình — Sẽ dùng thường xuyên nếu có"
+        - "Cao — Đang chặn luồng công việc của tôi"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Đối tượng hưởng lợi
+      options:
+        - "Chỉ tôi / trường hợp cụ thể của tôi"
+        - "Một nhóm nhỏ người dùng (<10%)"
+        - "Đa số người dùng (>50%)"
+        - "Tất cả người dùng"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Thông tin bổ sung
+      description: Mockup, wireframe, link tài liệu tham khảo, ví dụ từ sản phẩm khác...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Kiểm tra trước khi gửi
+      options:
+        - label: Tôi đã tìm kiếm Issues/Discussions hiện có và chưa thấy đề xuất trùng lặp.
+          required: true
+        - label: Đề xuất này phù hợp với định hướng AI + Năng lượng tái tạo của nlp-labs-vietnam.
+          required: false

@@ -1,0 +1,38 @@
+# CODEOWNERS — nlp-labs-vietnam/.github
+#
+# Tài liệu: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Cú pháp: <pattern>  <@owner hoặc @org/team>
+# Quy tắc cuối cùng khớp với file sẽ được áp dụng (ưu tiên cao hơn quy tắc trước).
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Mặc định: Core Team sở hữu toàn bộ repository ───────────────────────────
+*                                           @nlp-labs-vietnam/core-team
+
+# ── Workflows & Actions: chỉ DevOps team và core team có quyền review ────────
+.github/workflows/                          @nlp-labs-vietnam/core-team @nlp-labs-vietnam/devops
+.github/actions/                            @nlp-labs-vietnam/core-team @nlp-labs-vietnam/devops
+.github/dependabot.yml                      @nlp-labs-vietnam/core-team @nlp-labs-vietnam/devops
+
+# ── Security: yêu cầu core team review bất kỳ thay đổi bảo mật nào ──────────
+.github/workflows/security-scan.yml        @nlp-labs-vietnam/core-team
+SECURITY.md                                @nlp-labs-vietnam/core-team
+
+# ── Tài liệu cộng đồng: ai cũng có thể đề xuất, core team approve ────────────
+.github/CODE_OF_CONDUCT.md                 @nlp-labs-vietnam/core-team
+.github/CONTRIBUTING.md                    @nlp-labs-vietnam/core-team
+CONTRIBUTING.md                            @nlp-labs-vietnam/core-team
+.github/SUPPORT.md                         @nlp-labs-vietnam/core-team
+
+# ── Issue & PR templates: core team kiểm soát quy trình đóng góp ─────────────
+.github/ISSUE_TEMPLATE/                    @nlp-labs-vietnam/core-team
+.github/PULL_REQUEST_TEMPLATE.md           @nlp-labs-vietnam/core-team
+
+# ── Design System (nlp-ui-kit): frontend team chịu trách nhiệm ───────────────
+nlp-ui-kit/                                @nlp-labs-vietnam/core-team @nlp-labs-vietnam/frontend
+nlp-ui-kit/tokens/                         @nlp-labs-vietnam/core-team
+nlp-ui-kit/src/ai-chat/                    @nlp-labs-vietnam/core-team @nlp-labs-vietnam/ai
+nlp-ui-kit/src/charts/                     @nlp-labs-vietnam/core-team @nlp-labs-vietnam/frontend
+
+# ── Profile tổ chức: chỉ core team chỉnh sửa bộ mặt tổ chức ─────────────────
+profile/                                   @nlp-labs-vietnam/core-team

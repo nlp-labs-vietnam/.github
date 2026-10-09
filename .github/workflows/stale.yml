@@ -1,0 +1,48 @@
+name: Stale — Tự động đóng issue không có phản hồi
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # Chạy mỗi ngày lúc 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    name: Đóng issue không có phản hồi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-days: 14
+          close-issue-days: 3
+          stale-issue-label: "no-response"
+          exempt-issue-labels: "pinned,security,in-progress,blocked"
+          only-labels: "needs-more-info,waiting-for-reporter"
+          stale-issue-message: |
+            Xin chào! 👋
+
+            Issue này đã được đánh dấu là **cần thêm thông tin** nhưng chưa nhận được phản hồi trong **14 ngày**.
+
+            Để giữ danh sách Issues gọn gàng, issue sẽ tự động được **đóng sau 3 ngày nữa** nếu không có hoạt động mới.
+
+            Nếu vấn đề vẫn còn tồn tại, vui lòng cung cấp thêm thông tin hoặc mở issue mới.
+
+            Cảm ơn bạn đã đóng góp cho **NLP Labs Vietnam**! 🇻🇳
+          close-issue-message: |
+            Issue này đã được **đóng tự động** do không có phản hồi trong 17 ngày.
+
+            Nếu bạn vẫn gặp vấn đề, vui lòng mở issue mới hoặc tham gia [Discussions](https://github.com/nlp-labs-vietnam/nlpgroup/discussions).
+
+            Trân trọng — Đội ngũ **NLP Labs Vietnam** 🌱
+          stale-pr-days: 30
+          close-pr-days: 7
+          stale-pr-label: "stale"
+          stale-pr-message: |
+            PR này chưa có hoạt động trong **30 ngày** và sẽ được đóng sau 7 ngày nữa nếu không có cập nhật.
+            Nếu bạn vẫn muốn tiếp tục, hãy rebase với nhánh `main` và để lại comment.
+          close-pr-message: |
+            PR này đã được đóng tự động do không có hoạt động trong 37 ngày. Bạn có thể mở lại bất cứ lúc nào.
