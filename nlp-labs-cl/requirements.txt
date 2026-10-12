@@ -6,7 +6,7 @@ torch>=2.3.0
 numpy>=1.26.0
 
 # Vietnamese NLP
-underthesea>=6.8.4
+underthesea>=9.5.0
 pyvi>=0.1.1
 
 # LangChain & RAG
