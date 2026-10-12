@@ -9,7 +9,7 @@ pydantic-settings>=2.3.0
 # anthropic>=0.28.0
 
 # ─── Vector Store ────────────────────────────────────────────────────────────
-chromadb>=0.5.0
+chromadb>=1.5.9
 
 # ─── NLP (từ nlp-labs-cl) ────────────────────────────────────────────────────
 # Khi chạy trong Docker, nlp-labs-cl được mount vào /workspace/nlp-labs-cl

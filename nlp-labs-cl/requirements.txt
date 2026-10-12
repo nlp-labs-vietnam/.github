@@ -1,8 +1,8 @@
 # ─── Runtime dependencies ─────────────────────────────────────────────────────
 # Core NLP
-transformers>=4.41.0
-sentence-transformers>=3.0.0
-torch>=2.3.0
+transformers>=5.19.0
+sentence-transformers>=6.1.0
+torch>=2.14.1
 numpy>=1.26.0
 
 # Vietnamese NLP
@@ -10,13 +10,13 @@ underthesea>=6.8.4
 pyvi>=0.1.1
 
 # LangChain & RAG
-langchain>=0.2.0
-langchain-community>=0.2.0
-langchain-openai>=0.1.7
+langchain>=1.4.4
+langchain-community>=0.4.2
+langchain-openai>=1.7.0
 
 # Vector stores
-chromadb>=0.5.0
-faiss-cpu>=1.8.0
+chromadb>=1.5.9
+faiss-cpu>=1.15.1
 
 # API framework
 fastapi>=0.111.0
