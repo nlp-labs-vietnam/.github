@@ -1,0 +1,67 @@
+name: 🏛 Deploy — nlp-labs-vietnam Org Governance Docs
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".profile/org-README.md"
+      - ".profile/MAINTAINERS.md"
+      - ".profile/CODEOWNERS"
+      - ".profile/FUNDING.yml"
+      - ".profile/CONTRIBUTING.md"
+      - ".profile/CODE_OF_CONDUCT.md"
+      - ".profile/CHANGELOG.md"
+      - ".profile/ARCHITECTURE.md"
+      - ".profile/SPONSORSHIP.md"
+  workflow_dispatch:
+
+jobs:
+  deploy-org-docs:
+    name: Push governance docs to nlp-labs-vietnam/.github
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout source repo
+        uses: actions/checkout@v4
+
+      - name: 🔧 Configure Git identity
+        run: |
+          git config --global user.name  "Dennis-nham"
+          git config --global user.email "nhamquochuan@nlpgroup.vn"
+
+      - name: 📦 Clone target org .github repo
+        env:
+          ORG_TOKEN: ${{ secrets.NLP_LABS_ORG_TOKEN }}
+        run: |
+          git clone https://x-access-token:${ORG_TOKEN}@github.com/nlp-labs-vietnam/.github.git target-org
+
+      - name: 📁 Ensure directory structure exists
+        run: |
+          mkdir -p target-org/profile
+          mkdir -p target-org/.github/workflows
+
+      - name: 📋 Copy governance files
+        run: |
+          # Org public profile page
+          cp .profile/org-README.md      target-org/profile/README.md
+
+          # Core governance
+          cp .profile/MAINTAINERS.md     target-org/MAINTAINERS.md
+          cp .profile/CODEOWNERS         target-org/CODEOWNERS
+          cp .profile/CONTRIBUTING.md    target-org/CONTRIBUTING.md
+          cp .profile/CODE_OF_CONDUCT.md target-org/CODE_OF_CONDUCT.md
+          cp .profile/CHANGELOG.md       target-org/CHANGELOG.md
+          cp .profile/FUNDING.yml        target-org/.github/FUNDING.yml
+
+          # Architecture & sponsorship docs
+          cp .profile/ARCHITECTURE.md    target-org/ARCHITECTURE.md
+          cp .profile/SPONSORSHIP.md     target-org/SPONSORSHIP.md
+
+      - name: 🚀 Commit & Push
+        working-directory: target-org
+        env:
+          ORG_TOKEN: ${{ secrets.NLP_LABS_ORG_TOKEN }}
+        run: |
+          git add .
+          git diff --cached --quiet || git commit -m "chore(governance): sync org docs from Dennis-nham/Dennis-nham [bot]"
+          git push origin main

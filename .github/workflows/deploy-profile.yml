@@ -1,0 +1,41 @@
+name: 🚀 Deploy — Dennis-nham GitHub Profile
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".profile/README.md"
+  workflow_dispatch:   # cho phép chạy thủ công từ GitHub UI
+
+jobs:
+  deploy-profile:
+    name: Push profile README to Dennis-nham/Dennis-nham
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout source repo
+        uses: actions/checkout@v4
+
+      - name: 🔧 Configure Git identity
+        run: |
+          git config --global user.name  "Dennis-nham"
+          git config --global user.email "nhamquochuan@nlpgroup.vn"
+
+      - name: 📦 Clone target profile repo
+        env:
+          PAT_TOKEN: ${{ secrets.PROFILE_DEPLOY_TOKEN }}
+        run: |
+          git clone https://x-access-token:${PAT_TOKEN}@github.com/Dennis-nham/Dennis-nham.git target-profile
+
+      - name: 📋 Copy README into profile repo
+        run: |
+          cp .profile/README.md target-profile/README.md
+
+      - name: 🚀 Commit & Push
+        working-directory: target-profile
+        env:
+          PAT_TOKEN: ${{ secrets.PROFILE_DEPLOY_TOKEN }}
+        run: |
+          git add README.md
+          git diff --cached --quiet || git commit -m "chore(profile): sync README from Dennis-nham/Dennis-nham [bot]"
+          git push origin main

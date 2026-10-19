@@ -1,0 +1,11 @@
+# FUNDING.yml
+# Đặt tại: .github/FUNDING.yml (trong repo .github của org @nlp-labs-vietnam)
+# Nút "Sponsor" sẽ xuất hiện trên tất cả repo thuộc org sau khi file này được commit.
+# Tham khảo: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
+
+github: [Dennis-nham]
+
+# Kênh tài trợ tùy chỉnh (hiển thị tối đa 4)
+custom:
+  - "https://github.com/sponsors/Dennis-nham"
+  - "mailto:enterprise@nlpgroup.vn"
